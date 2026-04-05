@@ -5,11 +5,20 @@ const normalizeBaseUrl = (value, fallback) => {
   return trimTrailingSlash(source);
 };
 
-const getServerBaseUrl = (req) =>
-  normalizeBaseUrl(
-    process.env.SERVER_PUBLIC_URL,
-    req ? `${req.protocol}://${req.get("host")}` : `http://localhost:${process.env.PORT || 5000}`
-  );
+const getServerBaseUrl = (req) => {
+  if (process.env.SERVER_PUBLIC_URL) {
+    return trimTrailingSlash(process.env.SERVER_PUBLIC_URL);
+  }
+
+  const host = req ? req.get("host") : `localhost:${process.env.PORT || 5000}`;
+  const protocol = req ? req.protocol : "http";
+
+  // Strip port 5000 in production
+  const cleanHost =
+    process.env.NODE_ENV === "production" ? host.replace(":5000", "") : host;
+
+  return `${protocol}://${cleanHost}`;
+};
 
 const getClientBaseUrl = (req) =>
   normalizeBaseUrl(

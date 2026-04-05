@@ -7,8 +7,9 @@ const getDefaultApiOrigin = () => {
 
   const protocol = window.location.protocol === "https:" ? "https:" : "http:";
   const hostname = window.location.hostname || "localhost";
+  const isLocal = ["localhost", "127.0.0.1"].includes(hostname);
 
-  return `${protocol}//${hostname}:5000`;
+  return isLocal ? `${protocol}//${hostname}:5000` : `${protocol}//${hostname}`;
 };
 
 const rawApiBase = trimTrailingSlash(
